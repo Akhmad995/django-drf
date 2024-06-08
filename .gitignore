@@ -1,0 +1,12 @@
+.idea/
+.git/
+.env
+__pycache__
+migrations
+venv
+*/__pycache__
+*/migrations
+*/venv
+#*.sqlite3
+*.zip
+*.rar
