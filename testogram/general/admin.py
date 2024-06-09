@@ -150,6 +150,9 @@ class PostModelAdmin(admin.ModelAdmin):
     
     get_comment_count.short_description = 'comments count'
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related("comments")
+
 
 @admin.register(Comment)
 class CommentModelAdmin(admin.ModelAdmin):
@@ -168,6 +171,9 @@ class CommentModelAdmin(admin.ModelAdmin):
         PostFilter,
         AuthorFilter,
     )
+    raw_id_fields = (
+        "author",
+    )
 
 
 @admin.register(Reaction)
@@ -182,6 +188,10 @@ class ReactionModelAdmin(admin.ModelAdmin):
         PostFilter,
         AuthorFilter,
         ("value", ChoiceDropdownFilter),
+    )
+    autocomplete_fields = (
+        "author",
+        "post",
     )
 
 
