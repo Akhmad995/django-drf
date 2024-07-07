@@ -28,9 +28,16 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserListSerializer(serializers.ModelSerializer):
+    is_friend = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ("id", "first_name", "last_name")
+        fields = ("id", "first_name", "last_name", "is_friend")
+
+    def get_is_friend(self, obj) -> bool:
+        current_user = self.context["request"].user
+        return current_user in obj.friends.all()
+
+
 
 
 class NestedPostListSerializer(serializers.ModelSerializer):
