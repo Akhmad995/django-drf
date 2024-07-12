@@ -3,6 +3,7 @@ from general.models import User
 from general.models import Post
 
 
+# Регистрация
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -27,6 +28,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 
+# Получаем всех пользователей
 class UserListSerializer(serializers.ModelSerializer):
     is_friend = serializers.SerializerMethodField()
     class Meta:
@@ -38,8 +40,7 @@ class UserListSerializer(serializers.ModelSerializer):
         return current_user in obj.friends.all()
 
 
-
-
+# Посты конкретного пользователя
 class NestedPostListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -51,6 +52,7 @@ class NestedPostListSerializer(serializers.ModelSerializer):
         )
 
 
+# Получаем информацию о пользователе
 class UserRetrieveSerializer(serializers.ModelSerializer):
     is_friend = serializers.SerializerMethodField()
     friend_count = serializers.SerializerMethodField()
@@ -74,3 +76,64 @@ class UserRetrieveSerializer(serializers.ModelSerializer):
     def get_is_friend(self, obj) -> bool:
         return obj in self.context["request"].user.friends.all()
 
+
+# Создание и обновление поста
+class PostCreateUpdateSerializer(serializers.ModelSerializer):
+    author = serializers.HiddenField(
+        default=serializers.CurrentUserDefault(),
+    )
+
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "author",
+            "title",
+            "body",
+        )
+
+# Получаем автора поста
+class UserShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "first_name", "last_name")
+
+# Полуаем данные поста с сокращенным текстом
+class PostListSerializer(serializers.ModelSerializer):
+    author = UserShortSerializer()
+    body = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "author",
+            "title",
+            "body",
+            "created_at",
+        )
+
+    def get_body(self, obj) -> str:
+        if len(obj.body) > 128:
+            return obj.body[:125] + "..."
+        return obj.body
+
+# Получаем пост полностью по id
+class PostRetrieveSerializer(serializers.ModelSerializer):
+    author = UserShortSerializer()
+    my_reaction = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "author",
+            "title",
+            "body",
+            "my_reaction",
+            "created_at",
+        )
+
+    def get_my_reaction(self, obj) -> str:
+        reaction = self.context["request"].user.reactions.filter(post=obj).last()
+        return reaction.value if reaction else ""
