@@ -1,13 +1,14 @@
+.gitignore
 .idea/
 .git/
 .env
+*/.env
 __pycache__
 migrations
 venv
 */__pycache__
 */migrations
 */venv
-#*.sqlite3
-*.zip
-*.rar
+*/media/*
+*/readme.py
 readme.py
