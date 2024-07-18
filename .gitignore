@@ -10,4 +10,4 @@ venv
 #*.sqlite3
 *.zip
 *.rar
-readmy.php
+readme.py
