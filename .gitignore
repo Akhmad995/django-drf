@@ -5,7 +5,7 @@
 */.env
 __pycache__
 migrations
-venv
+testogram/venv
 */__pycache__
 */migrations
 */venv
